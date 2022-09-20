@@ -1,0 +1,19 @@
+
+
+
+Alert 5.: When the same IP, calling API Management and/or AppGW, gets many 401/403 responses followed by one or more 200 responses.
+let failureCountThreshold = 5;
+let successCountThreshold = 1;
+let timeRange = ago(1h);
+let authenticationWindow = 20m;
+requests
+| where _ResourceId == "/subscriptions/9bbc81d3-b0fc-488c-8506-6cb1604c786d/resourcegroups/lab-jonathan/providers/microsoft.insights/components/test-function-app-2gcloud"
+| where timestamp >= timeRange
+// Split out failure versus non-failure types
+| extend FailureOrSuccess = iff(resultCode in ("401", "403"), "Success", "Failure")
+| summarize StartTimeUtc = min(timestamp), EndTimeUtc = max(timestamp),
+make_set(client_IP), make_set(client_Type), make_set(client_City), make_set(client_StateOrProvince), make_set(client_CountryOrRegion), make_set(resultCode),
+FailureCount=countif(FailureOrSuccess=="Failure"),
+SuccessCount = countif(FailureOrSuccess=="Success")
+by bin(timestamp, authenticationWindow), client_IP
+| where FailureCount>=failureCountThreshold and SuccessCount>=successCountThreshold

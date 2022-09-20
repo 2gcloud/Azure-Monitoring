@@ -1,0 +1,5 @@
+//Alert 2.: When the same IP calls AppGW and/or APIM more than 2000 times pr hour.
+requests
+| where _ResourceId == "/subscriptions/9bbc81d3-b0fc-488c-8506-6cb1604c786d/resourcegroups/lab-jonathan/providers/microsoft.insights/components/test-function-app-2gcloud"
+| summarize value = count() by client_IP
+| where value >= 2000
