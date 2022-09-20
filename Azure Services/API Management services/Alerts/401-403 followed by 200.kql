@@ -1,7 +1,4 @@
-
-
-
-Alert 5.: When the same IP, calling API Management and/or AppGW, gets many 401/403 responses followed by one or more 200 responses.
+//Alert 5.: When the same IP, calling API Management and/or AppGW, gets many 401/403 responses followed by one or more 200 responses.
 let failureCountThreshold = 5;
 let successCountThreshold = 1;
 let timeRange = ago(1h);
